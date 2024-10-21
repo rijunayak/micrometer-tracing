@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  broker:
+    image: moeenz/docker-kafka-kraft:latest
+    restart: always
+    ports:
+      - "9092:9092"
+    environment:
+      - KRAFT_CONTAINER_HOST_NAME=broker
+
+  service-one:
+    build:
+      context: ./service-one
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+      - "5006:5006"
+    depends_on:
+      - service-two
+
+  service-two:
+    build:
+      context: ./service-two
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
+      - "5005:5005"
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"
+      - "4318:4318"
+      - "4317:4317"
